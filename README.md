@@ -73,6 +73,9 @@ uvicorn main:app --reload
 ```
 
 4. Run with Docker
+```bash
+docker-compose up --build
+```
 
 ```bash
 4. Run with Docker
