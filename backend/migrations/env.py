@@ -5,25 +5,29 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+DATABASE_URL = (
+    f"postgresql+psycopg2://{os.getenv('DATABASE_USERNAME')}:"
+    f"{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_HOST', 'localhost')}:"
+    f"{os.getenv('DATABASE_PORT')}/{os.getenv('DATABASE_NAME')}"
+)
+
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
+from app.core.database import Base
+from app.users.models import User
+from app.incidents.models import Incident
+from app.alerts.models import Alert
+target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 
 def run_migrations_offline() -> None:

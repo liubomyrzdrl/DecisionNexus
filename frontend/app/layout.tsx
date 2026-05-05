@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
+
+import MainAsideMenu from "@/components/MainAsideMenu";
+import { ThemeProvider, ReduxProvider } from "@/components/providers";
+
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +33,31 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={cn(
+        "h-full antialiased font-sans", 
+        geistSans.variable,
+        geistMono.variable,
+        inter.variable
+      )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex h-full w-full">
+        <ReduxProvider>
+          {/* ThemeProvider тепер обгортає все тіло сторінки */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <MainAsideMenu />
+            <main className="flex-1 w-2/3 p-8 overflow-auto">
+              {children}
+            </main>
+            <Toaster /> {/* Тепер Toaster бачить поточну тему */}
+          </ThemeProvider>
+        </ReduxProvider>
+      </body>
     </html>
   );
 }
